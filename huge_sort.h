@@ -105,4 +105,6 @@ public:
     }
 
     void start(const char* load_path, const char *save_path, Comparer comp=StrLess);
+    
+    void start(std::istream &in_stream, const char *save_path, Comparer comp=StrLess);
 };

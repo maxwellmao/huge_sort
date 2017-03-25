@@ -154,10 +154,17 @@ void HugeSort::start(const char* load_path, const char *save_path, Comparer comp
         cerr << "Cannot load file from " << load_path << endl;
         return;
     }
+    this->start(fp, save_path, comp);
+
+    fp.close();
+}
+
+void HugeSort::start(istream &in_stream, const char *save_path, Comparer comp)
+{
 
     string line;
 
-    while(fp >> line)
+    while(getline(in_stream, line))
     {
         unsigned int part=hash(line.c_str()) % this->total_part;
 
@@ -181,8 +188,6 @@ void HugeSort::start(const char* load_path, const char *save_path, Comparer comp
             {
                 cerr << "Cannot write into " << path << endl;
 
-                fp.close();
-
                 return;
             }
 
@@ -195,8 +200,6 @@ void HugeSort::start(const char* load_path, const char *save_path, Comparer comp
         *(it->second) << line << endl;
     }
 
-    fp.close();
-
     this->closePartFiles();
 
     this->sortSingleParts(comp);
@@ -204,8 +207,8 @@ void HugeSort::start(const char* load_path, const char *save_path, Comparer comp
     this->mergeSort(save_path);
 }
 
-string tmp_dir;
-string load_path;
+string tmp_dir="";
+string load_path="";
 unsigned int parts=1000;
 string save_path;
 
@@ -260,7 +263,16 @@ int main(int argc, char* argv[])
 {
     parse_args(argc, argv);
     HugeSort *huge_sort=new HugeSort(tmp_dir, parts);
-    huge_sort->start(load_path.c_str(), save_path.c_str());
+
+    if(load_path.size()>0)   
+    {
+        huge_sort->start(load_path.c_str(), save_path.c_str());
+    }
+    else
+    {
+        huge_sort->start(cin, save_path.c_str());
+    }
+
 
     return 0;
 }
